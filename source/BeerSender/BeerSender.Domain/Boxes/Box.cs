@@ -2,11 +2,13 @@
 {
     public class Box
     {
-        public Box(Box_capacity capacity)
+        public Box()
         {
-            Capacity = capacity;
         }
-        public Box_capacity Capacity { get; }
+
+        public bool Closed { get; set; }
+
+        public Box_capacity Capacity { get; set; }
 
         public Shipping_label Label { get; set; }
 
