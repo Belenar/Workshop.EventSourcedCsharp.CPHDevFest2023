@@ -27,12 +27,12 @@ public class Command_router
         switch(command)
         {
             case Close_box close_box:
-                var aggregate = new Box_aggregate(new Box());
+                var handler = new Close_box_handler();
                 foreach (var @event in events)
                 {
-                    aggregate.Apply((dynamic)@event);
+                    handler.Aggregate.Apply((dynamic)@event);
                 }
-                new_events.AddRange(new Close_box_handler(aggregate.Root_entity).Handle(close_box));
+                new_events.AddRange(handler.Handle(close_box));
                 break;
         }
 

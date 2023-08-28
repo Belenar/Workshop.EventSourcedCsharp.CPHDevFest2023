@@ -1,3 +1,5 @@
-﻿namespace BeerSender.Domain.Infrastructure;
+﻿using System.Text.Json.Serialization;
 
-public abstract record Command(Guid Aggregate_id);
+namespace BeerSender.Domain.Infrastructure;
+
+public abstract record Command([property:JsonIgnore]Guid Aggregate_id);

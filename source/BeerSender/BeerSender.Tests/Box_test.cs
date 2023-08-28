@@ -31,7 +31,7 @@ public class Box_test : Command_Test
 
     protected Box_failed_to_close Close_failed_because_box_was_empty()
     {
-        return new Box_failed_to_close(Box_failed_to_close.Reason.Box_has_no_bottles);
+        return new Box_failed_to_close(Box_failed_to_close.Fail_reason.Box_has_no_bottles);
     }
 
     #endregion
