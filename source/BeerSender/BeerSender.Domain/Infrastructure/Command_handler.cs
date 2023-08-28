@@ -6,4 +6,12 @@ public abstract class Command_handler<TCommand, TAggregate>
 {
     public TAggregate Aggregate { get; } = new ();
     public abstract IEnumerable<object> Handle(TCommand command);
+
+    public void ApplyAll(IEnumerable<object> events)
+    {
+        foreach (var @event in events)
+        {
+            Aggregate.Apply((dynamic)@event);
+        }
+    }
 }

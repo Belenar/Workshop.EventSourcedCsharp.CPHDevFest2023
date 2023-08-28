@@ -28,7 +28,7 @@ public record Label_failed_to_add(Label_failed_to_add.Fail_reason Reason)
 {
     public enum Fail_reason
     {
-        Label_was_invalid
+        Invalid_tracking_code
     }
 }
 
@@ -48,7 +48,6 @@ public record Box_failed_to_send(Box_failed_to_send.Fail_reason Reason)
 {
     public enum Fail_reason
     {
-        Box_was_still_empty,
         Box_was_not_closed,
         Label_was_not_added
     }

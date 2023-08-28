@@ -2,19 +2,12 @@
 {
     public class Box
     {
-        public Box()
-        {
-        }
-
         public bool Closed { get; set; }
-
-        public Box_capacity Capacity { get; set; }
-
-        public Shipping_label Label { get; set; }
-
+        public bool Sent { get; set; }
+        public Box_capacity? Capacity { get; set; }
+        public Shipping_label? Label { get; set; }
         public List<(Beer_bottle Bottle, int Quantity)> Contents { get; } =
             new ();
-
     }
 
     public record Box_capacity(int Number_of_spots)

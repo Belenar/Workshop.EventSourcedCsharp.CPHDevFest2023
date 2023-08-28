@@ -13,5 +13,3 @@ internal class Close_box_handler : Command_handler<Close_box, Box_aggregate>
                 Box_failed_to_close.Fail_reason.Box_has_no_bottles);
     }
 }
-
-

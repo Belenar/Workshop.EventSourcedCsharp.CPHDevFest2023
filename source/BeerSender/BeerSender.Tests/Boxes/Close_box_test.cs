@@ -1,4 +1,4 @@
-namespace BeerSender.Tests;
+namespace BeerSender.Tests.Boxes;
 
 public class Close_box_test : Box_test
 {
@@ -18,7 +18,7 @@ public class Close_box_test : Box_test
     public void When_box_is_not_empty_should_close()
     {
         Given(
-            Beer1_added());
+            Beer1_added_to_box());
 
         When(
             Close_box());
