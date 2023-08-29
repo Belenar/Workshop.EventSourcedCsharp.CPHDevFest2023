@@ -17,14 +17,16 @@ connection.start().then(function () {
 
 document.getElementById("createPackage").addEventListener("click", function (event) {
     var aggregate_id = document.getElementById("package_id_input").value;
+    var capacity = parseInt(document.getElementById("package_capacity_input").value);
     connection.invoke("subscribe_to_aggregate", aggregate_id).catch(function (err) {
         return console.error(err.toString());
     });
 
     var command = {
-        "$type": "CreatePackage",
+        "$type": "Create_box",
         "command": {
-            "Aggregate_id": aggregate_id
+            "Box_id": aggregate_id,
+            "Number_of_bottles": capacity
         }
     }
     postCommand(command);
