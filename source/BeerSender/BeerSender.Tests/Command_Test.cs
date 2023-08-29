@@ -16,8 +16,8 @@ namespace BeerSender.Tests
         protected void When(Command command)
         {
             var router = new Command_router(
-                _ => _events,
-                (_, @event) => _new_events.Add(@event));
+                _ => _events.Select(e => new Event_message(Guid.Empty, 0, e)),
+                msg => _new_events.Add(msg.Event));
 
             router.Handle_command(command);
         }

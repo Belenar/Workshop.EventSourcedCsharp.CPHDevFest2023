@@ -4,12 +4,12 @@ namespace BeerSender.Domain.Infrastructure;
 
 public class Command_router
 {
-    private readonly Func<Guid, IEnumerable<object>> _event_stream;
-    private readonly Action<Guid, object> _save_event;
+    private readonly Func<Guid, IEnumerable<Event_message>> _event_stream;
+    private readonly Action<Event_message> _save_event;
 
     public Command_router(
-        Func<Guid, IEnumerable<object>> event_stream,
-        Action<Guid, object> save_event
+        Func<Guid, IEnumerable<Event_message>> event_stream,
+        Action<Event_message> save_event
         )
     {
         _event_stream = event_stream;
@@ -20,13 +20,18 @@ public class Command_router
     {
         var aggregate_id = command.Aggregate_id;
 
-        var events = _event_stream(aggregate_id);
+        var events = _event_stream(aggregate_id).ToList();
 
-        var new_events = Run_handler(events, command);
+        var new_events = Run_handler(events.Select(e => e.Event), command);
+
+        var current_number = events.Any()
+            ? events.Max(e => e.Event_number)
+            : 0;
 
         foreach (object new_event in new_events)
         {
-            _save_event(aggregate_id, new_event);
+            current_number++;
+            _save_event(new Event_message(aggregate_id, current_number, new_event));
         }
     }
 
