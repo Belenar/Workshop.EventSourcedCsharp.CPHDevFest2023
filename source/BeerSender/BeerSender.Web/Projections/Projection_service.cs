@@ -35,7 +35,7 @@ where TProjection : class, Projection
             // Process events
             await using var transaction = await read_context.Database.BeginTransactionAsync(stoppingToken);
             
-            projection.Process_Events(events.Select(a =>
+            await projection.Process_Events(events.Select(a =>
                 new Event_message(a.Aggregate_id, a.Event_Number, a.Event)));
 
             // Update checkpoint
@@ -61,6 +61,7 @@ where TProjection : class, Projection
             Checkpoint = checkpoint
         };
         read_context.Checkpoints.Update(new_checkpoint);
+        read_context.SaveChanges();
     }
 
     private async Task<List<Aggregate_event>> Get_batch(
@@ -111,5 +112,5 @@ public interface Projection
     TimeSpan Wait_time { get; }
     Type[] Event_types { get; }
 
-    void Process_Events(IEnumerable<Event_message> events);
+    Task Process_Events(IEnumerable<Event_message> events);
 }
