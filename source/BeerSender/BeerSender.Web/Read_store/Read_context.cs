@@ -9,11 +9,20 @@ public class Read_context: DbContext
     { }
 
     public DbSet<Box_overview> Box_overviews { get; set; }
+    public DbSet<Projection_checkpoint> Checkpoints { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Box_overview>()
             .HasKey(o => o.Box_id);
+
+        modelBuilder.Entity<Projection_checkpoint>()
+            .HasKey(p => p.Projection_type);
+
+        modelBuilder.Entity<Projection_checkpoint>()
+            .Property(p => p.Projection_type)
+            .HasColumnType("varchar")
+            .HasMaxLength(64);
     }
 }
 
@@ -29,4 +38,10 @@ public enum Box_status
     Open,
     Closed,
     Sent
+}
+
+public class Projection_checkpoint
+{
+    public string Projection_type { get; set; }
+    public ulong Checkpoint { get; set; }
 }
