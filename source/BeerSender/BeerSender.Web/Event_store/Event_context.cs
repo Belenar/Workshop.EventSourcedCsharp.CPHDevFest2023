@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 
 namespace BeerSender.Web.Event_store;
@@ -29,6 +30,10 @@ public class Event_context : DbContext
         event_config.Property(a => a.Row_version)
             .IsRowVersion();
 
+        event_config.Property(a => a.Row_version_long)
+            .HasComputedColumnSql("CONVERT (BIGINT, [Row_version])", stored: true)
+            .ValueGeneratedOnAddOrUpdate();
+
         event_config.Ignore(a => a.Event);
     }
 }
@@ -40,6 +45,7 @@ public class Aggregate_event
     public string Event_Type { get; set;}
     public string Event_Payload { get; set;}
     public byte[] Row_version { get; set; }
+    public long Row_version_long { get; set; }
 
     private object? _event;
     public object Event
@@ -61,12 +67,5 @@ public class Aggregate_event
             Event_Type = _event.GetType().AssemblyQualifiedName!;
             Event_Payload = JsonSerializer.Serialize(_event);
         }
-    }
-}
-public static class EntityFrameworkHelper
-{
-    public static int Compare(this byte[] b1, byte[] b2)
-    {
-        throw new Exception("This method can only be used in EF LINQ Context");
     }
 }

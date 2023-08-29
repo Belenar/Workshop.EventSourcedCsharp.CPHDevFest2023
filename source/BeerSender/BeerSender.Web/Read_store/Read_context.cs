@@ -43,5 +43,5 @@ public enum Box_status
 public class Projection_checkpoint
 {
     public string Projection_type { get; set; }
-    public ulong Checkpoint { get; set; }
+    public long Checkpoint { get; set; }
 }

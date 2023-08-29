@@ -32,18 +32,21 @@ where TProjection : class, Projection
             // Fetch a batch of events
             var events = await Get_batch(event_context, projection, checkpoint);
 
-            // Process events
-            await using var transaction = await read_context.Database.BeginTransactionAsync(stoppingToken);
-            
-            await projection.Process_Events(events.Select(a =>
-                new Event_message(a.Aggregate_id, a.Event_Number, a.Event)));
+            if (events.Any())
+            {
+                // Process events
+                await using var transaction = await read_context.Database.BeginTransactionAsync(stoppingToken);
 
-            // Update checkpoint
-            checkpoint = events.Max(ev => BitConverter.ToUInt64(ev.Row_version));
-            Save_checkpoint(read_context, checkpoint);
+                await projection.Process_Events(events.Select(a =>
+                    new Event_message(a.Aggregate_id, a.Event_Number, a.Event)));
 
-            // Commit transaction
-            await transaction.CommitAsync(stoppingToken);
+                // Update checkpoint
+                checkpoint = events.Max(ev => ev.Row_version_long);
+                Save_checkpoint(read_context, checkpoint);
+
+                // Commit transaction
+                await transaction.CommitAsync(stoppingToken);
+            }
 
             // Wait if needed
             if (events.Count < projection.Batch_size)
@@ -53,7 +56,7 @@ where TProjection : class, Projection
         }
     }
 
-    private void Save_checkpoint(Read_context read_context, ulong checkpoint)
+    private void Save_checkpoint(Read_context read_context, long checkpoint)
     {
         var new_checkpoint = new Projection_checkpoint
         {
@@ -67,7 +70,7 @@ where TProjection : class, Projection
     private async Task<List<Aggregate_event>> Get_batch(
         Event_context event_context,
         TProjection projection,
-        ulong checkpoint)
+        long checkpoint)
     {
         var type_list = projection.Event_types
             .Select(t => t.AssemblyQualifiedName)
@@ -75,7 +78,7 @@ where TProjection : class, Projection
 
         var events = await event_context.Events
             .Where(e => type_list.Contains(e.Event_Type))
-            .Where(e => e.Row_version.Compare(BitConverter.GetBytes(checkpoint)) > 0)
+            .Where(e => e.Row_version_long > checkpoint)
             .OrderBy(e => e.Row_version)
             .Take(projection.Batch_size)
             .ToListAsync();
@@ -83,7 +86,7 @@ where TProjection : class, Projection
         return events;
     }
 
-    private async Task<ulong> Get_checkpoint()
+    private async Task<long> Get_checkpoint()
     {
         var scope = _service_provider.CreateScope();
         var read_context = scope.ServiceProvider.GetRequiredService<Read_context>();
