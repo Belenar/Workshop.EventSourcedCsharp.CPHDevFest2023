@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeerSender.Web.Event_store;
 
@@ -33,5 +34,26 @@ public class Aggregate_event
     public int Event_Number { get; set; }
     public string Event_Type { get; set;}
     public string Event_Payload { get; set;}
-    public object Event { get;}
+
+    private object? _event;
+    public object Event
+    {
+        get
+        {
+            if (_event is null)
+            {
+                // Risky: if event namespaces move, this may break
+                var type = Type.GetType(Event_Type);
+                _event = JsonSerializer.Deserialize(Event_Payload, type!);
+            }
+
+            return _event!;
+        }
+        set
+        {
+            _event = value;
+            Event_Type = _event.GetType().AssemblyQualifiedName!;
+            Event_Payload = JsonSerializer.Serialize(_event);
+        }
+    }
 }

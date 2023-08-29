@@ -1,6 +1,6 @@
-﻿using BeerSender.Domain.Boxes;
+﻿
 using BeerSender.Domain.Infrastructure;
-using Microsoft.AspNetCore.Http;
+using BeerSender.Web.Event_store;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeerSender.Web.Controllers
@@ -9,16 +9,21 @@ namespace BeerSender.Web.Controllers
     [ApiController]
     public class CommandController : ControllerBase
     {
-        [HttpPost]
-        public IActionResult CloseBox([FromBody] Command command)
+        private readonly Command_router _router;
+        private readonly Event_service _event_service;
+
+        public CommandController(Command_router router, Event_service event_service)
         {
-            HandleCommand(command);
-            return Ok();
+            _router = router;
+            _event_service = event_service;
         }
 
-        internal void HandleCommand(Command command)
+        [HttpPost]
+        public IActionResult PostCommand([FromBody] Command command)
         {
-
+            _router.Handle_command(command);
+            _event_service.Commit();
+            return Ok();
         }
     }
 }

@@ -19,8 +19,4 @@
     <ProjectReference Include="..\BeerSender.Domain\BeerSender.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Event_store\" />
-  </ItemGroup>
-
 </Project>

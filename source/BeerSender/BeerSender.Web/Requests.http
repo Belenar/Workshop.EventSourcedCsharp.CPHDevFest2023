@@ -1,0 +1,30 @@
+﻿@hostname=localhost
+@port=50433
+@aggregate_id=1EA176BD-B49B-43EC-8BBA-FDCC3C675CCD
+
+POST https://{{hostname}}:{{port}}/api/command
+Content-Type: application/json
+
+{
+	"$type": "Create_box",
+	"command": {
+		"Box_id": "{{aggregate_id}}",
+		"Number_of_bottles": 15
+	}
+}
+
+
+###
+
+POST https://{{hostname}}:{{port}}/api/command
+Content-Type: application/json
+
+{
+	"$type": "Add_bottle_to_box",
+	"command": {
+		"Box_id": "{{aggregate_id}}",
+		"Brewery": "Beer 4 Nature",
+		"Name": "Hert",
+		"Alcohol_percentage": 6.7
+	}
+}
